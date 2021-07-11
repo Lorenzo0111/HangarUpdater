@@ -22,9 +22,40 @@
  * SOFTWARE.
  */
 
-dependencies {
-    testCompileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
-    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
-    implementation( project(":hangar-common") )
-    implementation("io.papermc:paperlib:1.0.6")
+package me.lorenzo0111.updater;
+
+import me.lorenzo0111.updater.hangar.UpdateChecker;
+import me.lorenzo0111.updater.hangar.plugin.UpdatablePlugin;
+import me.lorenzo0111.updater.hangar.scheduler.IScheduler;
+import me.lorenzo0111.updater.scheduler.BukkitScheduler;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class SamplePlugin extends JavaPlugin implements UpdatablePlugin {
+    private BukkitScheduler scheduler;
+
+    @Override
+    public void onEnable() {
+        this.scheduler = BukkitScheduler.create(this);
+
+        String updateText = ChatColor.translateAlternateColorCodes('&', "&8[&eUpdater&8] &7An update for " + name() + " has been found. New Version: &e&n%new-version%");
+        UpdateChecker updater = new UpdateChecker(this,updateText,1000);
+        updater.sendUpdateCheck(Bukkit.getConsoleSender());
+    }
+
+    @Override
+    public String version() {
+        return this.getDescription().getVersion();
+    }
+
+    @Override
+    public String name() {
+        return this.getName();
+    }
+
+    @Override
+    public IScheduler scheduler() {
+        return scheduler;
+    }
 }

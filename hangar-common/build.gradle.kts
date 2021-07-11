@@ -22,13 +22,6 @@
  * SOFTWARE.
  */
 
-package me.lorenzo0111.updater.hangar.plugin;
-
-import me.lorenzo0111.updater.hangar.scheduler.IScheduler;
-
-public interface UpdatablePlugin {
-    String version();
-    String name();
-    String serverVersion();
-    IScheduler scheduler();
+dependencies {
+    implementation("com.google.code.gson:gson:2.8.7")
 }

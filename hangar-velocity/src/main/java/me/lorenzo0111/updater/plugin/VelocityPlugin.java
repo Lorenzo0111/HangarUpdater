@@ -33,16 +33,18 @@ import me.lorenzo0111.updater.scheduler.VelocityScheduler;
 public class VelocityPlugin implements UpdatablePlugin {
     private final String version;
     private final String name;
+    private final String serverVersion;
     private final IScheduler scheduler;
 
-    private VelocityPlugin(String version, String name, IScheduler scheduler) {
+    private VelocityPlugin(String version, String name, String serverVersion, IScheduler scheduler) {
         this.version = version;
         this.name = name;
+        this.serverVersion = serverVersion;
         this.scheduler = scheduler;
     }
 
     public static VelocityPlugin from(PluginContainer plugin, ProxyServer server) {
-        return new VelocityPlugin(plugin.getDescription().getVersion().orElse(""), plugin.getDescription().getName().orElse(""), VelocityScheduler.create(plugin,server));
+        return new VelocityPlugin(plugin.getDescription().getVersion().orElse(""), plugin.getDescription().getName().orElse(""), server.getVersion().getVersion(),VelocityScheduler.create(plugin,server));
     }
 
     @Override
@@ -53,6 +55,11 @@ public class VelocityPlugin implements UpdatablePlugin {
     @Override
     public String name() {
         return name;
+    }
+
+    @Override
+    public String serverVersion() {
+        return serverVersion;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class SamplePlugin extends JavaPlugin implements UpdatablePlugin {
         this.scheduler = BukkitScheduler.create(this);
 
         String updateText = ChatColor.translateAlternateColorCodes('&', "&8[&eUpdater&8] &7An update for " + name() + " has been found. New Version: &e&n%new-version%");
-        UpdateChecker updater = new UpdateChecker(this,updateText,1000);
+        UpdateChecker updater = new UpdateChecker(this,updateText,"paper","Resource", "paper", null);
         updater.sendUpdateCheck(Bukkit.getConsoleSender());
     }
 
@@ -52,6 +52,11 @@ public class SamplePlugin extends JavaPlugin implements UpdatablePlugin {
     @Override
     public String name() {
         return this.getName();
+    }
+
+    @Override
+    public String serverVersion() {
+        return this.getServer().getMinecraftVersion();
     }
 
     @Override

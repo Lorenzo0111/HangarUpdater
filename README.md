@@ -9,7 +9,7 @@ There are two methods to use this update checker.
 public class MyPlugin extends JavaPlugin {
     public void onEnable() {
         BukkitPlugin plugin = BukkitPlugin.from(this);
-        UpdateChecker checker = new UpdateChecker(plugin,String.format("[%s] Update found: %new-version%", this.getName()), 1000)
+        UpdateChecker updater = new UpdateChecker(plugin,String.format("[%s] Update found: %new-version%", this.getName()), "paper","Resource", "paper", null);
         updater.sendUpdateCheck(Bukkit.getConsoleSender());
     }
 }

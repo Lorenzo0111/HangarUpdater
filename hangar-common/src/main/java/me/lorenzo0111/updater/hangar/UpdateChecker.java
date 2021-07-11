@@ -24,14 +24,19 @@
 
 package me.lorenzo0111.updater.hangar;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.lorenzo0111.updater.hangar.plugin.UpdatablePlugin;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -44,18 +49,27 @@ public class UpdateChecker {
     private String newVersion;
 
     private final UpdatablePlugin plugin;
-    private final int resourceId;
+    private final String author;
+    private final String slug;
     private final String message;
+    private final String platform;
+    private final String api;
 
     /**
      * @param plugin Plugin
      * @param message Message to send to the user. Placeholders: %version% %new-version%
-     * @param resourceId Hangar resource id
+     * @param author Hangar username of the resource's author
+     * @param slug Hangar slug of the resource
+     * @param api API Host or null to default. Do not include any link. Only the host. Ex: localhost:3000
      */
-    public UpdateChecker(UpdatablePlugin plugin, String message, int resourceId) {
+    public UpdateChecker(UpdatablePlugin plugin, String message, String author, String slug, @Nullable String platform, @Nullable String api) {
         this.plugin = plugin;
-        this.resourceId = resourceId;
+        this.author = author;
+        this.slug = slug;
         this.message = message;
+        this.platform = platform;
+        // ToDo: Edit default url
+        this.api = api == null ? "localhost:3000" : api;
 
         this.fetch();
     }
@@ -65,17 +79,48 @@ public class UpdateChecker {
      */
     private CompletableFuture<Void> fetch() {
         return plugin.scheduler().async(() -> {
-            try (InputStream inputStream = new URL("" + this.resourceId).openStream(); Scanner scanner = new Scanner(inputStream)) {
-                if (scanner.hasNext()) {
-                    String version = scanner.next();
+            try {
+                URL url = new URL(this.formatUrl());
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
 
-                    this.updateAvailable = !this.plugin.version().equalsIgnoreCase(version);
-                    this.fetched = true;
-                    this.newVersion = version;
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder content = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
                 }
-            } catch (IOException exception) {
-                exception.printStackTrace();
+                in.close();
+
+                JsonObject json = JsonParser.parseString(content.toString()).getAsJsonObject();
+                con.disconnect();
+
+                JsonArray result = json.get("result").getAsJsonArray();
+                JsonObject newVersion = result.get(0).getAsJsonObject();
+
+                this.updateAvailable = false;
+
+                if (newVersion.get("name").getAsString().equals(this.plugin.version())) {
+                    this.fetched = true;
+                    return;
+                }
+
+                JsonObject platform = newVersion.get("platformDependencies").getAsJsonObject();
+                JsonArray platformVersion = platform.get(this.platform.toUpperCase()).getAsJsonArray();
+
+                platformVersion.forEach((version) -> {
+                    if (version.getAsString().contains(plugin.serverVersion())) {
+                        this.updateAvailable = true;
+                    }
+                });
+
+                this.fetched = true;
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
         });
     }
 
@@ -93,4 +138,13 @@ public class UpdateChecker {
         }
     }
 
+    private String formatUrl() {
+        // http://API/api/v1/projects/AUTHOR/SLUG/versions?channel=Release&limit=1&offset=0&platform=PLATFORM
+        StringBuilder format = new StringBuilder("%s/api/v1/projects/%s/%s/versions?channel=Release&limit=1&offset=0");
+        if (this.platform != null) {
+            format.append("&platform=").append(platform);
+        }
+
+        return String.format(format.toString(), api, author, slug);
+    }
 }

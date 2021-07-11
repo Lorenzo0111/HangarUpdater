@@ -32,16 +32,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BukkitPlugin implements UpdatablePlugin {
     private final String version;
     private final String name;
+    private final String serverVersion;
     private final IScheduler scheduler;
 
-    private BukkitPlugin(String version, String name, IScheduler scheduler) {
+    private BukkitPlugin(String version, String name, String serverVersion, IScheduler scheduler) {
         this.version = version;
         this.name = name;
+        this.serverVersion = serverVersion;
         this.scheduler = scheduler;
     }
 
     public static BukkitPlugin from(JavaPlugin plugin) {
-        return new BukkitPlugin(plugin.getDescription().getVersion(), plugin.getName(), BukkitScheduler.create(plugin));
+        return new BukkitPlugin(plugin.getDescription().getVersion(), plugin.getName(), plugin.getServer().getMinecraftVersion(), BukkitScheduler.create(plugin));
     }
 
     @Override
@@ -52,6 +54,11 @@ public class BukkitPlugin implements UpdatablePlugin {
     @Override
     public String name() {
         return name;
+    }
+
+    @Override
+    public String serverVersion() {
+        return this.serverVersion;
     }
 
     @Override

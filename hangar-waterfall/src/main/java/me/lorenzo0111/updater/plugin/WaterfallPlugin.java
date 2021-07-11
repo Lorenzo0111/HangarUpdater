@@ -31,16 +31,18 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class WaterfallPlugin implements UpdatablePlugin {
     private final String version;
     private final String name;
+    private final String serverVersion;
     private final IScheduler scheduler;
 
-    private WaterfallPlugin(String version, String name, IScheduler scheduler) {
+    private WaterfallPlugin(String version, String name, String serverVersion, IScheduler scheduler) {
         this.version = version;
         this.name = name;
         this.scheduler = scheduler;
+        this.serverVersion = serverVersion;
     }
 
     public static WaterfallPlugin from(Plugin plugin) {
-        return new WaterfallPlugin(plugin.getDescription().getVersion(), plugin.getDescription().getName(), me.lorenzo0111.updater.scheduler.WaterfallPlugin.create(plugin));
+        return new WaterfallPlugin(plugin.getDescription().getVersion(), plugin.getDescription().getName(), plugin.getProxy().getVersion(), me.lorenzo0111.updater.scheduler.WaterfallPlugin.create(plugin));
     }
 
     @Override
@@ -51,6 +53,11 @@ public class WaterfallPlugin implements UpdatablePlugin {
     @Override
     public String name() {
         return name;
+    }
+
+    @Override
+    public String serverVersion() {
+        return serverVersion;
     }
 
     @Override

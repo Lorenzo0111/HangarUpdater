@@ -23,5 +23,5 @@
  */
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.8.7")
+    implementation("com.google.code.gson:gson:2.8.8")
 }

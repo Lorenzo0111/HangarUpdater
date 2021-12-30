@@ -28,7 +28,7 @@ plugins {
     `maven-publish`
     java
     id("net.kyori.indra.publishing") version "2.0.6"
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "me.lorenzo0111.updater"

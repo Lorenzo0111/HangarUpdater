@@ -24,5 +24,5 @@
 
 dependencies {
     implementation( project(":hangar-common") )
-    compileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
+    compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
 }

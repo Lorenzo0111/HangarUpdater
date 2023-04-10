@@ -27,7 +27,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     `maven-publish`
     java
-    id("net.kyori.indra.publishing") version "2.1.1"
+    id("net.kyori.indra.publishing") version "3.0.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 

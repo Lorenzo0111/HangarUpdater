@@ -52,7 +52,7 @@ subprojects {
     }
 
     dependencies {
-        implementation("net.kyori:adventure-api:4.13.0")
+        implementation("net.kyori:adventure-api:4.14.0")
     }
 
     indra {
